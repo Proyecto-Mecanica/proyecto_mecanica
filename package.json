@@ -10,6 +10,7 @@
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
+    "v-lazy-image": "^2.1.1",
     "vue": "^3.2.41",
     "vue-router": "^4.1.6"
   },

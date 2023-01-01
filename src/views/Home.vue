@@ -6,4 +6,5 @@ const message = ref("Hello");
 
 <template>
   <h1>Hello {{ message }}</h1>
+  <p><span>Hello world!</span></p>
 </template>

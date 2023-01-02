@@ -1,7 +1,12 @@
+<script setup>
+import { RouterLink } from "vue-router"
+</script>
+
 <template>
     <div class="header">
-        <div class="header__logo"></div>
-        <div class="header__links"></div>
-        <div class="header__cta"></div>
+        <router-link class="header__link" :to="{ name: 'home' }">Inicio</router-link>
+        <router-link class="header__link" :to="{ name: 'about' }">Conocenos</router-link>
+        <router-link class="header__link" :to="{ name: 'lessons'}">Lecciones</router-link>
+
     </div>
 </template>

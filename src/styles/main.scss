@@ -1,8 +1,33 @@
+@import 'variables';
+@import 'mixins';
+@import 'home';
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
 * {
-    background-color: rgb(182, 154, 154);   
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: $font_color;
+    font-family: 'Roboto', sans-serif;
 }
-p {
-    span{
-        color: green;
-    }
+
+body {
+    background-color: $floral-white;
+    overflow: hidden;
+
+}
+
+.exact-active-link {
+    background-color: $light-coral;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
 }

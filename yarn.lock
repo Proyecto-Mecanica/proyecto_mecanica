@@ -462,7 +462,7 @@ v-lazy-image@^2.1.1:
   resolved "https://registry.yarnpkg.com/v-lazy-image/-/v-lazy-image-2.1.1.tgz#5cc1b24aa6ab777e7c25ac24004dc464dcfad269"
   integrity sha512-QC6Jcok99CRhhsO7svfI3hcBaT945dSuaHk3jr7WHm+QJMzbB/f32xKkdF45qL5ezd5KeoqHKh4gD92mQtjfXQ==
 
-vite@^3.2.3:
+vite@^3.2.5:
   version "3.2.5"
   resolved "https://registry.yarnpkg.com/vite/-/vite-3.2.5.tgz#dee5678172a8a0ab3e547ad4148c3d547f90e86a"
   integrity sha512-4mVEpXpSOgrssFZAOmGIr85wPHKvaDAcXqxVxVRZhljkJOMZi1ibLibzjLHzJvcok8BMguLc7g1W6W/GqZbLdQ==
@@ -473,6 +473,11 @@ vite@^3.2.3:
     rollup "^2.79.1"
   optionalDependencies:
     fsevents "~2.3.2"
+
+vue-kinesis@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/vue-kinesis/-/vue-kinesis-2.0.5.tgz#48b68861d6dc50c256cd811fb5bad0203c439dea"
+  integrity sha512-uO2lG9A/L4I9KvyJuUzAkAWqd37In/kWxQ6rZ3/heJZ8+7rHAbBO5Knz6xG+cpO+9Q4cYurxXsPfWM6e7X9E3Q==
 
 vue-router@^4.1.6:
   version "4.1.6"

@@ -1,0 +1,114 @@
+.home__layout{
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    background: {
+        image: url('../assets/home/start_deco.svg');
+        size: cover;
+        repeat: no-repeat;
+        position: top
+    };
+    z-index: 2;
+    @include flex(center, center, column);
+
+
+    &--router {
+        width: 90%;
+        height: 100%;
+    }
+
+    &--nav {
+        position: absolute;
+        margin: auto;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 100px;
+        height: 200px;
+    }
+
+    &--start     {
+        width: 100%;
+        height: 100%;
+        @include flex(center, space-around, row);
+
+        &__main {
+            max-width: 50%;
+            height: 100%;
+            @include flex(center, space-evenly, column);
+            &__title {
+                @include flex(flex-start, space-evenly, column);
+                align-self: flex-start;
+                span:nth-child(1) {
+                    font-size: 100px;
+                    font-weight: bolder;
+                }
+
+                span:nth-child(2) {
+                    font-size: 100px;
+                    font-weight: bold;
+                }
+
+                p {
+                    margin-top: 20px
+                }
+
+            }
+
+            &__text {
+            }
+
+            &__cta {
+                width: 180px;
+                height: 40px;
+                outline: none;
+                background-color: $cg-blue;
+                border: none;
+                border-radius: 5px;
+                color: #fff;
+                cursor: pointer;
+                transition: .2s;
+
+                &:hover {
+                    background-color: $light-coral;
+                }
+            }
+
+
+        }
+    }
+
+    &--lessons {
+        width: 100%;
+        height: 100%;
+    }
+
+    &--header {
+        width: 30%;
+        height: 50px;
+    }
+}
+
+.nav {
+    width: 100%;
+    height: 100%;
+    @include flex(center, space-around, column);
+    &__dot {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background-color: $cg-blue;
+        transition: .2s;
+    }
+}
+
+.header {
+    width: 100%;
+    height: 100%;
+    @include flex(center, space-evenly, row);
+
+    &__link {
+        text-decoration: none;
+        background: none !important;
+    }
+}

@@ -486,6 +486,11 @@ vue-router@^4.1.6:
   dependencies:
     "@vue/devtools-api" "^6.4.5"
 
+vue-slicksort@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/vue-slicksort/-/vue-slicksort-2.0.3.tgz#67807d1a4389029d72c8632789206c27eec4b0be"
+  integrity sha512-xtAxSE5xoOxBBceJ8043w7Z9wV1cpjua/x68x9tzS8zXurmqKH5slkrLLSiQT33c4vF8Zw5yAc4M4Z1HtIdWUg==
+
 vue@^3.2.41:
   version "3.2.45"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.2.45.tgz#94a116784447eb7dbd892167784619fef379b3c8"

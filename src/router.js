@@ -22,6 +22,18 @@ const routes = [
                 component: () => import('../src/views/Lessons.vue')
             }
         ]
+    },
+    {
+        path: '/lesson/:id',
+        name: 'lesson',
+        component: () => import('../src/layouts/LessonLayout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'lesson-start',
+                component: () => import('../src/views/Lesson.vue')
+            }
+        ]
     }
 ]
 

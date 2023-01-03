@@ -1,6 +1,7 @@
 @import 'variables';
 @import 'mixins';
 @import 'home';
+@import 'lesson';
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
@@ -14,7 +15,6 @@
 
 body {
     background-color: $floral-white;
-    overflow: hidden;
 
 }
 

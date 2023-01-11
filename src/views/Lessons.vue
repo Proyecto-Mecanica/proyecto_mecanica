@@ -8,6 +8,11 @@ const lessons = [
         title: 'Tiro vertical',
         id: '1',
         active: true
+    },
+    {
+        title: 'Caida libre',
+        id: '2',
+        active: false
     }
 ]
 

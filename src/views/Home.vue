@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "@vue/reactivity";
 import { KinesisContainer, KinesisElement} from 'vue-kinesis'
-const srcImage = ref('src/assets/home/home__image.png')
+const srcImage = ref('https://i.postimg.cc/xjX511gF/home-image.png')
 
 </script>
 

@@ -1,21 +1,39 @@
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { SlickList, SlickItem } from "vue-slicksort";
 
 const opts = reactive({
   id: 104,
   items: [
     {
-      value: "banana",
-      id: 141,
+      value: "Un balon arrojado hacia arriba",
+      id: 141, 
+      color: "#ffcb77",
     },
     {
-      value: "tomato",
+      value: "Una persona que salta lo mas alto posible",
       id: 142,
+      color: "#ffcb77",
     },
     {
-      value: "watermelon",
+      value: "Lanzar una moneda al aire",
       id: 143,
+      color: "#ffcb77",
+    },
+    {
+      value: "La trayectoria de una pelota de golf",
+      id: 144,
+      color: "#ffcb77",
+    },
+    {
+      value: "Un cohete que se lanza",
+      id: 145,
+      color: "#ffcb77",
+    },
+    {
+      value: "Un saque de voleibol",
+      id: 146,
+      color: "#ffcb77",
     },
   ],
 });
@@ -25,13 +43,49 @@ const answers = reactive({
   items: [],
 });
 
-const formula = "$$x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}.$$";
+const correctAnswer = ref([142,145, 141, 143 ])
+const answerFirst = ref(null)
+const answerSecond = ref(null)
+const answerThird = ref(null)
+
+const styleFirst = computed(() => {
+    return answerFirst.value == 45 ? '#17c3b2' : '#fe6d73'
+})
+
+const styleSecond = computed(() => {
+    return answerSecond.value == 2.47 ? '#17c3b2' : '#fe6d73'
+})
+
+const styleThird = computed(() => {
+    return answerThird.value == 19.6 ? '#17c3b2' : '#fe6d73'
+})
+
+const checkDragAns = () => {
+    if(answers.items.length === 0 ) return;
+    answers.items.map(e => {
+        if(!correctAnswer.value.includes(e.id)) {
+            e.color = '#fe6d73'
+        }
+    })
+
+}
+
+const verticalFormulas = [
+  "$$y= {y_{0} + V_{0}t + \\frac{at^2}{2} }$$",
+  "$$v= {v_{0} + at }$$",
+];
+
+const freeFallFormulas = [
+  "$$v_{f}= { -gt }$$",
+  "$$y_{f} = {y_{0} - \\frac{gt}{2} }$$",
+  "$$v_{f}^2 = { 2gh }$$",
+];
 
 let canvasVertical = null;
 let contextVertical = null;
 
 let canvasFreeFall = null;
-let contexFreeFall = null;
+let contextFreeFall = null;
 
 const ballImage = new Image();
 const grassImage = new Image();
@@ -46,13 +100,16 @@ onMounted(() => {
   canvasVertical.width = document.getElementsByClassName(
     "lesson__layout--start__behavior"
   )[0].clientWidth;
+
   canvasFreeFall = document.getElementById("freeFall");
-  contextVertical = canvasVertical.getContext("2d");
+  contextFreeFall = canvasFreeFall.getContext("2d");
   canvasFreeFall.width = document.getElementsByClassName(
     "lesson__layout--start__behavior"
   )[0].clientWidth;
+
   canvasVertical.height = 350;
   startCanvasVertical();
+  startCanvasFall();
 });
 
 const ballAnimation = reactive({
@@ -62,10 +119,17 @@ const ballAnimation = reactive({
   y: 0,
 });
 
-grassImage.onload = () =>
-  contextVertical.drawImage(grassImage, 0, canvasVertical.height - 150);
+const fallBall = reactive({
+  x: 0,
+  y: 0,
+});
 
-ballImage.onload = () =>
+grassImage.onload = () => {
+  contextVertical.drawImage(grassImage, 0, canvasVertical.height - 150);
+  contextFreeFall.drawImage(grassImage, 0, canvasVertical.height - 150);
+};
+
+ballImage.onload = () => {
   contextVertical.drawImage(
     ballImage,
     ballAnimation.x,
@@ -73,6 +137,9 @@ ballImage.onload = () =>
     50,
     50
   );
+
+  contextFreeFall.drawImage(ballImage, canvasFreeFall.width / 2, 0, 50, 50);
+};
 
 const drawElementsVertical = () => {
   contextVertical.clearRect(0, 0, canvasVertical.width, canvasVertical.height);
@@ -89,14 +156,39 @@ const drawElementsVertical = () => {
   contextVertical.fillText("Altura máxima", 10, 50);
 };
 
+const drawElementsFall = () => {
+  contextFreeFall.clearRect(0, 0, canvasFreeFall.width, canvasFreeFall.height);
+  contextFreeFall.drawImage(grassImage, 0, canvasFreeFall.height - 150);
+  contextFreeFall.drawImage(ballImage, fallBall.x, fallBall.y, 50, 50);
+};
+
 const updateVerticalUp = () => {
   if (ballAnimation.y == 1) return;
   ballAnimation.y -= 1;
 };
 
+const updateFallDown = () => {
+  fallBall.y += 1;
+};
+
 const updateVerticalDown = () => {
   if (ballAnimation.y == canvasVertical.height - 55) return;
   ballAnimation.y += 1;
+};
+
+const restarFall = () => {
+  window.cancelAnimationFrame(startFallAnimation);
+  contextFreeFall.clearRect(0, 0, canvasFreeFall.width, canvasFreeFall.height);
+  contextFreeFall.drawImage(ballImage, canvasFreeFall.width / 2, 0, 50, 50);
+  contextFreeFall.drawImage(grassImage, 0, canvasFreeFall.height - 150);
+  fallBall.y = 0;
+};
+
+const startFallAnimation = () => {
+  if (fallBall.y == canvasVertical.height - 55) return;
+  updateFallDown();
+  drawElementsFall();
+  window.requestAnimationFrame(startFallAnimation);
 };
 
 const startAnimationVerticalUp = () => {
@@ -121,31 +213,35 @@ function startCanvasVertical() {
   ballAnimation.y = canvasVertical.height - 55;
   drawElementsVertical();
 }
+
+function startCanvasFall() {
+  fallBall.x = canvasVertical.width / 2;
+  fallBall.y = 0;
+  drawElementsFall();
+}
 </script>
 
 <template>
   <kinesis-container class="lesson__layout--start">
     <div class="lesson__layout--start__header">
       <kinesis-element class="lesson__layout--start__header__title">
-        <h1>Tiro vertical</h1>
+        <h1>Tiro vertical y Caída libre</h1>
       </kinesis-element>
     </div>
 
     <div class="lesson__layout--start__intro">
       <div class="lesson__layout--start__intro__text">
-        <h2>Introduccion</h2>
+        <h2>Introducción</h2>
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi,
-          explicabo neque. Ipsam nobis quae perspiciatis laboriosam vel et
-          excepturi! Eos quasi obcaecati consequatur odio voluptates asperiores
-          alias ipsum, perferendis commodi. Lorem ipsum dolor sit amet
-          consectetur adipisicing elit. Ducimus reiciendis, optio perferendis
-          hic ipsam totam dolorem dolorum fuga et! Impedit voluptatibus expedita
-          nobis nam repudiandae, quo cumque ut tempora numquam! Lorem ipsum
-          dolor sit amet consectetur adipisicing elit. Excepturi voluptate nemo
-          quidem itaque aspernatur qui, provident reiciendis nam, recusandae,
-          ullam consequatur nesciunt expedita soluta rem eveniet fugit inventore
-          asperiores libero.
+          De entre todos los movimientos rectilíneos uniformemente acelerados
+          <b>(m.r.u.a.)</b> o movimientos rectilíneos uniformemente variados
+          <b>(m.r.u.v.)</b>
+          que se dan en la naturaleza, existen dos de particular interés: la
+          caída libre y el lanzamiento vertical. En este apartado estudiaremos
+          la caída libre. Ambos se rigen por las ecuaciones propias de los
+          movimientos rectilíneos uniformemente acelerados
+          <b>(m.r.u.a.)</b> o movimientos rectilíneos uniformemente variados
+          <b>(m.r.u.v.)</b>
         </p>
       </div>
       <kinesis-element
@@ -155,9 +251,10 @@ function startCanvasVertical() {
       >
         <p>Palabras clave</p>
         <div class="lesson__layout--start__intro__keywords__list">
-          <p class="lesson__layout--start__intro__keywords__key">word</p>
-          <p class="lesson__layout--start__intro__keywords__key">word</p>
-          <p class="lesson__layout--start__intro__keywords__key">word</p>
+          <p class="lesson__layout--start__intro__keywords__key">Vertical</p>
+          <p class="lesson__layout--start__intro__keywords__key">M.R.U.A.</p>
+          <p class="lesson__layout--start__intro__keywords__key">M.R.U.V.</p>
+          <p class="lesson__layout--start__intro__keywords__key">Caída libre</p>
         </div>
       </kinesis-element>
     </div>
@@ -171,16 +268,12 @@ function startCanvasVertical() {
 
       <div class="lesson__layout--start__content__explanation">
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque
-          perferendis reprehenderit error at esse est optio eius? Ea, atque quo
-          corrupti inventore harum veritatis natus tempora vitae quisquam
-          voluptas minus? Lorem ipsum, dolor sit amet consectetur adipisicing
-          elit. Id molestias culpa iste pariatur deleniti assumenda voluptates
-          fuga eum, modi eveniet aspernatur similique mollitia voluptatem
-          tenetur autem sunt officiis. Deserunt, expedita. Lorem ipsum dolor sit
-          amet consectetur adipisicing elit. Dolores amet nisi, veritatis itaque
-          veniam placeat ipsam rerum maiores labore consectetur quam nulla dicta
-          error aliquid sunt tempora esse quibusdam facere?
+          Se denomina así a un tipo de movimiento que es resultado de arrojar un
+          objeto verticalmente hacia arriba (o hacia abajo) desde cierta altura
+          H. Una vez lanzado, el cuerpo asciende durante cierto tiempo y luego
+          desciende en (caída libre), con una aceleración igual al valor de la
+          gravedad. En general, cuando se estudian los tiros verticales, no se
+          toma en cuenta ningún tipo de fuerza de roce con el aire.
         </p>
       </div>
 
@@ -188,10 +281,8 @@ function startCanvasVertical() {
         <h3>Ejercicio</h3>
         <p>
           <b>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iusto
-            alias quos magnam dolor, commodi blanditiis atque architecto
-            praesentium totam impedit debitis officia cum, cumque expedita
-            aspernatur ratione pariatur nisi fugiat!
+            Arrastra las opciones que pertenezcan a un tiro vertical al recuadro
+            de la derecha
           </b>
         </p>
       </div>
@@ -223,22 +314,19 @@ function startCanvasVertical() {
             :accept="true"
           >
             <SlickItem
-              v-for="({ value, id }, i) in answers.items"
+              v-for="({ value, id, color }, i) in answers.items"
               :key="id"
               :index="i"
               class="lesson__layout--start__content__exercice__drag__item"
+              :style="{ background: color ? color : '#ffcb77'}"
             >
               {{ value }}
             </SlickItem>
           </SlickList>
         </div>
-        <button class="lesson__layout--start__content__exercice__slick__prove">
+        <button class="lesson__layout--start__content__exercice__slick__prove" @click="checkDragAns">
           Comprobar
         </button>
-      </div>
-
-      <div class="lesson__layout--start__content__formulas">
-        <div class="lesson__layout--start__content__formulas__formula"></div>
       </div>
     </div>
 
@@ -248,13 +336,13 @@ function startCanvasVertical() {
       <h2 class="lesson__layout--start__formulas__title">Formulas</h2>
       <div class="lesson__layout--start__formulas__list">
         <kinesis-element
-          v-for="i in 5"
-          :key="i"
+          v-for="(i, idx) in verticalFormulas"
+          :key="idx"
           type="depth"
           :strength="10"
           class="lesson__layout--start__formulas__list__formula"
         >
-          <vue-mathjax :formula="formula"> </vue-mathjax>
+          <vue-mathjax :formula="i"> </vue-mathjax>
         </kinesis-element>
       </div>
     </div>
@@ -268,16 +356,14 @@ function startCanvasVertical() {
 
       <div class="lesson__layout--start__behavior__text">
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos rem nisi
-          at maxime temporibus cumque officia ad. Ipsam error similique incidunt
-          voluptates quisquam eaque adipisci harum amet dicta, est nam? Lorem
-          ipsum dolor sit amet consectetur adipisicing elit. Corrupti rerum,
-          nemo perspiciatis exercitationem quod enim, nesciunt cum optio
-          provident sint autem quia atque necessitatibus! Consectetur, maxime.
-          Nesciunt velit sed molestiae! Lorem ipsum, dolor sit amet consectetur
-          adipisicing elit. Sint, dolores. Odio porro, veritatis animi qui sit
-          nobis quod accusamus placeat ipsa, iusto fugit nihil quasi doloribus
-          nostrum! Nesciunt, ipsa perferendis?
+          En el lanzamiento vertical un objeto es lanzado verticalmente hacia
+          arriba o hacia abajo desde cierta altura H despreciando cualquier tipo
+          de rozamiento con el aire o cualquier otro obstáculo. Se trata de un
+          movimiento rectilíneo uniformemente acelerado (m.r.u.a.) o movimiento
+          rectilíneo uniformemente variado (m.r.u.v.) en el que la aceleración
+          coincide con el valor de la gravedad. En la superficie de la Tierra,
+          la aceleración de la gravedad se puede considerar constante, dirigida
+          hacia abajo, se designa por la letra g y su valor es de 9.8 m/s2.
         </p>
       </div>
 
@@ -307,15 +393,19 @@ function startCanvasVertical() {
 
     <div class="lesson__layout--start__examples">
       <div class="lesson__layout--start__examples__title">
-        <h2>Ejemplo - Caida libre</h2>
+        <h2>Ejemplo - Tiro vertical</h2>
       </div>
       <div class="lesson__layout--start__examples__problem">
         <p class="lesson__layout--start__examples__problem__text">
-          1. Se deja caer una manzana desde una altura de 30m sobre el suelo
+          1. Un joven espera a sus campaneros de juego mientras lanza una pelota
+          verticalmente hacia arriba. Cuando llega uno de sus compañeros, le
+          pide a este que mida el tiempo de viaje de la pelota y, después de
+          varios lanzamientos, registran un tiempo de 4s para los viajes de ida
+          y vuelta.
         </p>
         <ol class="lesson__layout--start__examples__problem__questions">
-          <li>Cuanto tiempo le toma llegar al piso?</li>
-          <li>Que velocidad tiene al momento de tocar el suelo?</li>
+          <li>¿A que velocidad se lanza la pelota?</li>
+          <li>¿Que altura alcanza esta?</li>
         </ol>
       </div>
       <div class="lesson__layout--start__examples__problem__solution">
@@ -323,43 +413,40 @@ function startCanvasVertical() {
         <p
           class="lesson__layout--start__examples__problem__solution__paragraph"
         >
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque,
-          vero consequatur molestias dolore provident quaerat, odit repellat at
-          temporibus eos, sunt itaque excepturi quod harum velit eveniet cumque?
-          Ipsa, a?
+          Dado que se conoce el tiempo de recorrido, podemos calcular la
+          velocidad inicial y, a partir de este valor, calculamos la altura que
+          alcanza la pelota y la sustituimos:
         </p>
         <kinesis-element
           type="depth"
           :strength="10"
           class="lesson__layout--start__examples__problem__solution__formula"
         >
-          <vue-mathjax :formula="formula"> </vue-mathjax>
+          <vue-mathjax
+            :formula="'$${{v}_{0}}=\\frac{g{{t}_{r}}}{2}=\\frac{\\left( 9.8\\frac{m}{{{s}^{2}}} \\right)\\left( 4s \\right)}{2}=19.6\\frac{m}{s}$$'"
+          >
+          </vue-mathjax>
         </kinesis-element>
         <p
           class="lesson__layout--start__examples__problem__solution__paragraph"
         >
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque,
-          vero consequatur molestias dolore provident quaerat, odit repellat at
-          temporibus eos, sunt itaque excepturi quod harum velit eveniet cumque?
-          Ipsa, a?
+          Entonces la altura que alcanza la pelota es:
         </p>
         <kinesis-element
           type="depth"
           :strength="10"
           class="lesson__layout--start__examples__problem__solution__formula"
         >
-          <vue-mathjax :formula="formula"> </vue-mathjax>
+          <vue-mathjax
+            :formula="'$${{h}_{\\max }}=\\frac{{{v}_{0}}^{2}}{2g}=\\frac{{{\\left( 19.6\\frac{m}{s} \\right)}^{2}}}{2\\left( 9.8\\frac{m}{{{s}^{2}}} \\right)}=19.6m$$'"
+          >
+          </vue-mathjax>
         </kinesis-element>
         <p
           class="lesson__layout--start__examples__problem__solution__paragraph"
         >
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque,
-          vero consequatur molestias dolore provident quaerat, odit repellat at
-          temporibus eos, sunt itaque excepturi quod harum velit eveniet cumque?
-          Ipsa, a? Lorem ipsum, dolor sit amet consectetur adipisicing elit. In
-          sint expedita, at omnis voluptatem inventore placeat doloribus?
-          Dolorum beatae quia atque harum quasi? Dolor temporibus ut ab porro
-          recusandae iure.
+          La altura que alcanza la pelota es prácticamente de 19.6 metros,
+          lanzada a 19.6 m/s
         </p>
       </div>
     </div>
@@ -373,16 +460,13 @@ function startCanvasVertical() {
 
       <div class="lesson__layout--start__content__explanation">
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque
-          perferendis reprehenderit error at esse est optio eius? Ea, atque quo
-          corrupti inventore harum veritatis natus tempora vitae quisquam
-          voluptas minus? Lorem ipsum, dolor sit amet consectetur adipisicing
-          elit. Id molestias culpa iste pariatur deleniti assumenda voluptates
-          fuga eum, modi eveniet aspernatur similique mollitia voluptatem
-          tenetur autem sunt officiis. Deserunt, expedita. Lorem ipsum dolor sit
-          amet consectetur adipisicing elit. Dolores amet nisi, veritatis itaque
-          veniam placeat ipsam rerum maiores labore consectetur quam nulla dicta
-          error aliquid sunt tempora esse quibusdam facere?
+          Se denomina caída libre al movimiento de un cuerpo bajo la acción
+          exclusiva de un campo gravitatorio. En caída libre, un objeto se deja
+          caer desde el reposo, entonces su velocidad inicial es nula. Las
+          fórmulas que vamos a emplear para este movimiento son las mismas de
+          movimiento rectilíneo uniforme, pero considerando en todo caso que la
+          velocidad inicial es nula. ¡Esto reducirá bastante las fórmulas por lo
+          que no tendremos problema alguno para emplearlas!
         </p>
       </div>
     </div>
@@ -393,13 +477,13 @@ function startCanvasVertical() {
       <h2 class="lesson__layout--start__formulas__title">Formulas</h2>
       <div class="lesson__layout--start__formulas__list">
         <kinesis-element
-          v-for="i in 5"
-          :key="i"
+          v-for="(i, id) in freeFallFormulas"
+          :key="id"
           type="depth"
           :strength="10"
           class="lesson__layout--start__formulas__list__formula"
         >
-          <vue-mathjax :formula="formula"> </vue-mathjax>
+          <vue-mathjax :formula="i"> </vue-mathjax>
         </kinesis-element>
       </div>
     </div>
@@ -413,16 +497,10 @@ function startCanvasVertical() {
 
       <div class="lesson__layout--start__behavior__text">
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos rem nisi
-          at maxime temporibus cumque officia ad. Ipsam error similique incidunt
-          voluptates quisquam eaque adipisci harum amet dicta, est nam? Lorem
-          ipsum dolor sit amet consectetur adipisicing elit. Corrupti rerum,
-          nemo perspiciatis exercitationem quod enim, nesciunt cum optio
-          provident sint autem quia atque necessitatibus! Consectetur, maxime.
-          Nesciunt velit sed molestiae! Lorem ipsum, dolor sit amet consectetur
-          adipisicing elit. Sint, dolores. Odio porro, veritatis animi qui sit
-          nobis quod accusamus placeat ipsa, iusto fugit nihil quasi doloribus
-          nostrum! Nesciunt, ipsa perferendis?
+          La aceleración de la gravedad es un vector que apunta hacia abajo en
+          todo momento, así que tenemos que asociar un signo negativo al valor
+          de la gravedad para solucionar estos ejercicios. Nuestro marco de
+          referencia para estos ejercicios siempre será el eje y.
         </p>
       </div>
 
@@ -434,66 +512,79 @@ function startCanvasVertical() {
       >
       </canvas>
 
-      <button @click="startAnimationVertical">Animacion</button>
+      <button
+        @click="startFallAnimation"
+        class="lesson__layout--start__behavior__animation__button"
+      >
+        Lanzar
+      </button>
+      <button
+        class="lesson__layout--start__behavior__animation__button"
+        @click="restarFall"
+      >
+        Reiniciar
+      </button>
     </div>
 
     <hr class="lesson__layout--start__break" />
 
     <div class="lesson__layout--start__examples">
       <div class="lesson__layout--start__examples__title">
-        <h2>Ejemplo - Caida libre</h2>
+        <h2>Ejemplo - Caída libre</h2>
       </div>
       <div class="lesson__layout--start__examples__problem">
         <p class="lesson__layout--start__examples__problem__text">
-          1. Se deja caer una manzana desde una altura de 30m sobre el suelo
+          1. ¿Desde que altura debe caer un objeto para golpear el suelo con
+          velocidad de 20 m/s?
         </p>
-        <ol class="lesson__layout--start__examples__problem__questions">
-          <li>Cuanto tiempo le toma llegar al piso?</li>
-          <li>Que velocidad tiene al momento de tocar el suelo?</li>
-        </ol>
       </div>
       <div class="lesson__layout--start__examples__problem__solution">
         <h2>Solucion</h2>
         <p
           class="lesson__layout--start__examples__problem__solution__paragraph"
         >
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque,
-          vero consequatur molestias dolore provident quaerat, odit repellat at
-          temporibus eos, sunt itaque excepturi quod harum velit eveniet cumque?
-          Ipsa, a?
+          Recordemos que lo primero que tenemos que hacer es tomar en cuenta los
+          datos que nos está proporcionando el problema. El único dato que nos
+          proporciona es la velocidad final, y como dato predeterminado tenemos
+          el valor de la gravedad, el cual ya sabemos que es constante.
         </p>
         <kinesis-element
           type="depth"
           :strength="10"
           class="lesson__layout--start__examples__problem__solution__formula"
         >
-          <vue-mathjax :formula="formula"> </vue-mathjax>
+          <vue-mathjax :formula="'$$v_{f}^2 = { 2gh }$$'"> </vue-mathjax>
         </kinesis-element>
         <p
           class="lesson__layout--start__examples__problem__solution__paragraph"
         >
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque,
-          vero consequatur molestias dolore provident quaerat, odit repellat at
-          temporibus eos, sunt itaque excepturi quod harum velit eveniet cumque?
-          Ipsa, a?
+          Reemplazamos los valores...
         </p>
         <kinesis-element
           type="depth"
           :strength="10"
           class="lesson__layout--start__examples__problem__solution__formula"
         >
-          <vue-mathjax :formula="formula"> </vue-mathjax>
+          <vue-mathjax :formula="'$$(20)^2 = { 2(9.8)h }$$'"> </vue-mathjax>
         </kinesis-element>
         <p
           class="lesson__layout--start__examples__problem__solution__paragraph"
         >
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque,
-          vero consequatur molestias dolore provident quaerat, odit repellat at
-          temporibus eos, sunt itaque excepturi quod harum velit eveniet cumque?
-          Ipsa, a? Lorem ipsum, dolor sit amet consectetur adipisicing elit. In
-          sint expedita, at omnis voluptatem inventore placeat doloribus?
-          Dolorum beatae quia atque harum quasi? Dolor temporibus ut ab porro
-          recusandae iure.
+          Como podemos ver, nos queda la incógnita h, que viene siendo lo que
+          nos pide determinar el problema
+        </p>
+        <kinesis-element
+          type="depth"
+          :strength="10"
+          class="lesson__layout--start__examples__problem__solution__formula"
+        >
+          <vue-mathjax :formula="'$$h = { \\frac{20^2}{ 2(9.8)} }$$'">
+          </vue-mathjax>
+        </kinesis-element>
+        <p
+          class="lesson__layout--start__examples__problem__solution__paragraph"
+        >
+          Por último, tenemos que la altura es h = 20.38 m/s
         </p>
       </div>
     </div>
@@ -507,53 +598,95 @@ function startCanvasVertical() {
 
       <div class="lesson__layout--start__exercises__exercise">
         <p class="lesson__layout--start__exercises__exercise__problem">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe minima
-          deleniti ipsa pariatur unde. Deserunt doloribus ad quasi pariatur
-          tempora odit veritatis eaque sunt ipsum ullam, eius tenetur atque
-          nesciunt. Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-          Vel expedita repellat nobis excepturi distinctio harum maxime,
-          perspiciatis mollitia! Dolorum hic perferendis ullam sint ipsum iure
-          explicabo voluptatem eveniet inventore incidunt!
+          Una manzana cae de un árbol y llega al suelo en 3 segundos, ¿de qué
+          altura cayó la manzana?
         </p>
         <input
           type="text"
           class="lesson__layout--start__exercises__exercise__result"
           placeholder="Ingresar resultado"
+          v-model="answerFirst"
+          :style="{ background: styleFirst }"
         />
       </div>
 
       <div class="lesson__layout--start__exercises__exercise">
         <p class="lesson__layout--start__exercises__exercise__problem">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe minima
-          deleniti ipsa pariatur unde. Deserunt doloribus ad quasi pariatur
-          tempora odit veritatis eaque sunt ipsum ullam, eius tenetur atque
-          nesciunt. Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-          Vel expedita repellat nobis excepturi distinctio harum maxime,
-          perspiciatis mollitia! Dolorum hic perferendis ullam sint ipsum iure
-          explicabo voluptatem eveniet inventore incidunt!
+          Se deja caer una manzana desde una altura de 30m, sobre el suelo.
+          ¿Cuánto tiempo le toma llegar al piso?
         </p>
         <input
           type="text"
           class="lesson__layout--start__exercises__exercise__result"
           placeholder="Ingresar resultado"
+          v-model="answerSecond"
+          :style="{ background: styleSecond }"
         />
       </div>
 
       <div class="lesson__layout--start__exercises__exercise">
         <p class="lesson__layout--start__exercises__exercise__problem">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe minima
-          deleniti ipsa pariatur unde. Deserunt doloribus ad quasi pariatur
-          tempora odit veritatis eaque sunt ipsum ullam, eius tenetur atque
-          nesciunt. Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-          Vel expedita repellat nobis excepturi distinctio harum maxime,
-          perspiciatis mollitia! Dolorum hic perferendis ullam sint ipsum iure
-          explicabo voluptatem eveniet inventore incidunt!
+          Un joven espera a sus campaneros de juego mientras lanza una pelota
+          verticalmente hacia arriba. Cuando llega uno de sus compañeros, le
+          pide a este que mida el tiempo de viaje de la pelota y, después de
+          varios lanzamientos, registran un tiempo de 4s para los viajes de ida
+          y vuelta. ¿A que velocidad se lanza la pelota?
         </p>
         <input
           type="text"
           class="lesson__layout--start__exercises__exercise__result"
           placeholder="Ingresar resultado"
+          v-model="answerThird"
+          :style="{ background: styleThird }"
         />
+      </div>
+    </div>
+    <hr class="lesson__layout--start__break" />
+
+    <div class="lesson__layout--start__recommendations">
+      <h2 class="lesson__layout--start__recommendations__title">
+        Recursos recomendados
+      </h2>
+      <div class="lesson__layout--start__recommendations__list">
+        <div
+          class="lesson__layout--start__recommendations__list__recommendation"
+        >
+          <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/k9y4Y3huCss"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <div
+          class="lesson__layout--start__recommendations__list__recommendation"
+        >
+          <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/ri-uJO4t1D4"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <div
+          class="lesson__layout--start__recommendations__list__recommendation"
+        >
+          <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/H4hEWkxgk5g"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        </div>
       </div>
     </div>
   </kinesis-container>

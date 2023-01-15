@@ -63,6 +63,10 @@
                 background-color: $maximum-yellow-red;
                 box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
                 @include flex(center, space-around, column);
+                
+                &__key {
+                    text-align: center;
+                }
             }
         }
 
@@ -82,7 +86,12 @@
             }
 
             &__instructions {
+                width: 100%;
                 margin-top: 10px;
+
+                p {
+                    text-align: left; 
+                }
             }
             
             &__exercice {
@@ -91,8 +100,8 @@
                 @include flex(center, space-evenly, column);
                 &__drag {
                     width: 250px;
-                    height: 450px;
-                    @include flex(center, space-evenly, column);
+                    height: 480px;
+                    @include flex(center, space-around, column);
                     background-color: $tiffany-blue;
                     border-radius: 5px;
                     
@@ -101,8 +110,9 @@
                         height: 45px;
                         border-radius: 5px;
                         @include flex(center, center, column);
+                        font-size: 10px;
                         background-color: $maximum-yellow-red;
-                    }
+                   }
 
                 }
 
@@ -215,7 +225,7 @@
                     font-size: $fontSize;
                     @include flex(center, space-between, column);
                     &__formula {
-                        width: 250px;
+                        width: 340px;
                         height: 100px;
                         margin-left: 15px;
                         border-radius: 5px;
@@ -223,10 +233,13 @@
                         @include flex(center, center, row);
                         box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
                         color: #fff;
+                        font-size: 15px;
                     }
 
                     &__paragraph {
                         margin-top: 15px;
+                        text-align: left;
+                        align-self: flex-start;
                     }
                 }
             }
@@ -238,12 +251,21 @@
             font-size: $fontSize;
             &__exercise {
                 width: 95%;
+                height: 150px;
                 background-color: $maximum-yellow-red;
-                margin-top: 20px;
+                margin-top:50px;
                 border-radius: 5px;
                 padding: 5px;
                 @include flex(center, space-around, column);
-                box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+                box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 3px;
+
+
+
+
+                &__problem {
+                    align-self: flex-start;
+                }
+
                 &__result {
                     border: none;
                     outline: none;
@@ -253,8 +275,31 @@
                     padding: 10px;
                     width: 150px;
                     height: 35px;
+                    color: #fff;
                 }
 
+            }
+        }
+
+        &__recommendations {
+            margin-top: $marginTop;
+            width: $width;
+
+            &__list {
+                width: 100%;
+                @include flex(center, space-between, row);
+                flex-wrap: wrap;
+
+                &__recommendation{
+                    margin-top: 10px;
+                    iframe {
+                        width: 380px;
+                        border-radius: 5px;
+                        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+                        
+                    
+                    }
+                }
             }
         }
     }
